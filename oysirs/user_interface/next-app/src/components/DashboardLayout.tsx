@@ -61,7 +61,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         w-64
         lg:translate-x-0
       `}>
-        <div className="px-6 py-4 border-b flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-b-gray-200 flex items-center justify-between">
           <div className={`${isCollapsed ? 'hidden lg:hidden' : ''}`}>
             <h1 className="text-xl font-bold">OYSIRS</h1>
             <p className="text-sm text-gray-500">
@@ -115,7 +115,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </ul>
         </nav>
         
-        <div className={`absolute bottom-0 w-full border-t p-4 ${isCollapsed ? 'lg:px-2' : ''}`}>
+        <div className={`absolute bottom-0 w-full border-t border-t-gray-200 p-4 ${isCollapsed ? 'lg:px-2' : ''}`}>
           <div className={`flex items-center ${isCollapsed ? 'lg:justify-center' : ''}`}>
             <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold shrink-0">
               {user?.profile.email?.charAt(0).toUpperCase() || 'U'}
