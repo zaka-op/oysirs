@@ -185,13 +185,13 @@ export default function CustomersList() {
               <th scope="col" className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 Full Name
               </th>
-              <th scope="col" className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+              <th scope="col" className="hidden md:table-cell px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 Email
               </th>
-              <th scope="col" className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+              <th scope="col" className="hidden md:table-cell px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 Mobile No
               </th>
-              <th scope="col" className="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+              <th scope="col" className="hidden md:table-cell px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 Address
               </th>
               {/* Actions column removed */}
@@ -216,21 +216,21 @@ export default function CustomersList() {
                       ))}
                     </select>
                   </td>
-                  <td className="px-3 sm:px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="hidden md:table-cell px-3 sm:px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                     <select className="w-full min-w-[150px] bg-transparent border-0 focus:ring-2 focus:ring-blue-500 rounded">
                       {customer.emails.map((item, idx) => (
                         <option key={idx} value={item.email}>{item.email}</option>
                       ))}
                     </select>
                   </td>
-                  <td className="px-3 sm:px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="hidden md:table-cell px-3 sm:px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                     <select className="w-full min-w-[120px] bg-transparent border-0 focus:ring-2 focus:ring-blue-500 rounded">
                       {customer.mobiles.map((item, idx) => (
                         <option key={idx} value={item.mobile_no}>{item.mobile_no}</option>
                       ))}
                     </select>
                   </td>
-                  <td className="px-3 sm:px-4 lg:px-6 py-4 text-sm text-gray-500 max-w-xs">
+                  <td className="hidden md:table-cell px-3 sm:px-4 lg:px-6 py-4 text-sm text-gray-500 max-w-xs">
                     <select className="w-full min-w-[150px] bg-transparent border-0 focus:ring-2 focus:ring-blue-500 rounded truncate">
                       {customer.addresses.map((item, idx) => (
                         <option key={idx} value={item.address} className="truncate">{item.address}</option>
