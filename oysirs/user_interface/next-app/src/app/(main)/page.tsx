@@ -144,7 +144,7 @@ export default function Home() {
                       </tr>
                     ))) : (
                     <tr>
-                      <td colSpan={6} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                      <td colSpan={5} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                         No uploads found.
                       </td>
                     </tr>
@@ -174,7 +174,7 @@ export default function Home() {
                 </div>
               </Link>
 
-              <Link
+              {/* <Link
                 href="/records"
                 className="block p-6 border rounded-lg hover:bg-gray-50 transition-colors"
               >
@@ -189,7 +189,7 @@ export default function Home() {
                     <p className="text-sm text-gray-500">Browse and manage your data records</p>
                   </div>
                 </div>
-              </Link>
+              </Link> */}
             </div>
           </div>
         </div>
