@@ -47,7 +47,7 @@ export default function Home() {
   const stats = {
     totalRecords: uploadsData?.uploads.length || 0,
     processedRecords: uploadsData?.uploads.filter(u => u.status === "completed").length || 0,
-    pendingRecords: uploadsData?.uploads.filter(u => u.status === "pending").length || 0,
+    pendingRecords: uploadsData?.uploads.filter(u => u.status === "pending" || u.status === "in_progress").length || 0,
     errorRecords: uploadsData?.uploads.filter(u => u.status === "failed").length || 0,
   };
 
@@ -121,7 +121,6 @@ export default function Home() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -133,7 +132,6 @@ export default function Home() {
                   {(uploadsData?.uploads.length || 0) > 0 ? (
                     uploadsData!.uploads.map((upload) => (
                       <tr key={upload.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{upload.id}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{upload.year}/{upload.bank}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(upload.created_at)}</td>
                         <td className="px-6 py-4 whitespace-nowrap">
