@@ -158,17 +158,17 @@ export default function ExcelUpload({ onFileUploaded }: ExcelUploadProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-xl font-semibold mb-4">Upload Customer Data</h2>
-      <p className="text-gray-600 mb-6">
+    <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+      <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Upload Customer Data</h2>
+      <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
         Upload your customer data spreadsheet in Excel format (.xlsx or .xls). 
         The system will analyze the data and structure it for easy access and reporting.
       </p>
 
       {/* Select Year and Bank you're uploading for */}
-      <div className="mb-6 bg-gray-50 rounded-lg p-4">
-        <h3 className="text-md font-semibold mb-3">Select Year and Bank</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="mb-4 sm:mb-6 bg-gray-50 rounded-lg p-3 sm:p-4">
+        <h3 className="text-sm sm:text-md font-semibold mb-2 sm:mb-3">Select Year and Bank</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div>
             <label htmlFor="yearSelect" className="block text-sm font-medium text-gray-700 mb-1">
               Year
@@ -218,7 +218,7 @@ export default function ExcelUpload({ onFileUploaded }: ExcelUploadProps) {
       
       {!file ? (
         <div 
-          className={`border-2 border-dashed rounded-lg p-8 mb-6 text-center cursor-pointer transition-colors ${
+          className={`border-2 border-dashed rounded-lg p-6 sm:p-8 mb-4 sm:mb-6 text-center cursor-pointer transition-colors ${
             isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-blue-400"
           }`}
           onDragOver={handleDragOver}
@@ -234,48 +234,48 @@ export default function ExcelUpload({ onFileUploaded }: ExcelUploadProps) {
             accept=".xls,.xlsx,.xlsm"
           />
           <div className="flex flex-col items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mb-3 sm:mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <p className="text-lg font-medium text-gray-700">
+            <p className="text-base sm:text-lg font-medium text-gray-700">
               {isDragging ? "Drop Excel file here" : "Drag and drop Excel file here"}
             </p>
-            <p className="text-sm text-gray-500 mt-1">or</p>
-            <button className="mt-2 px-4 py-2 text-sm text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">or</p>
+            <button className="mt-2 px-4 py-2 text-xs sm:text-sm text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
               Browse Excel Files
             </button>
             <p className="text-xs text-gray-500 mt-2">
               Supported formats: .xlsx, .xls (Max size: 10MB)
             </p>
             {error && (
-              <p className="text-sm text-red-600 mt-2">{error}</p>
+              <p className="text-xs sm:text-sm text-red-600 mt-2">{error}</p>
             )}
           </div>
         </div>
       ) : (
-        <div className="mb-6">
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="flex items-center mb-4">
+        <div className="mb-4 sm:mb-6">
+          <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
+            <div className="flex items-start sm:items-center mb-4">
               <div className="flex-shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 sm:h-10 sm:w-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <div className="ml-4 flex-1">
-                <h3 className="text-lg font-semibold">{file.name}</h3>
-                <p className="text-sm text-gray-500">{formatFileSize(file.size)}</p>
-                <div className="flex mt-1 text-xs text-gray-600">
-                  <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded mr-2">
+              <div className="ml-3 sm:ml-4 flex-1 min-w-0">
+                <h3 className="text-sm sm:text-lg font-semibold truncate">{file.name}</h3>
+                <p className="text-xs sm:text-sm text-gray-500">{formatFileSize(file.size)}</p>
+                <div className="flex flex-wrap mt-1 text-xs gap-1 sm:gap-2">
+                  <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded">
                     Year: {selectedYear}
                   </span>
-                  <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded">
+                  <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded truncate max-w-[200px]">
                     Bank: {banks.find(b => b.value === selectedBank)?.label || selectedBank}
                   </span>
                 </div>
               </div>
               <button 
                 onClick={handleReset}
-                className="text-gray-400 hover:text-gray-600"
+                className="ml-2 text-gray-400 hover:text-gray-600 flex-shrink-0"
                 disabled={isUploading}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -287,12 +287,12 @@ export default function ExcelUpload({ onFileUploaded }: ExcelUploadProps) {
             {isUploading && (
               <div className="mt-4">
                 <div className="flex justify-between mb-1">
-                  <span className="text-sm font-medium text-blue-600">Uploading...</span>
-                  <span className="text-sm font-medium text-blue-600">{uploadProgress}%</span>
+                  <span className="text-xs sm:text-sm font-medium text-blue-600">Uploading...</span>
+                  <span className="text-xs sm:text-sm font-medium text-blue-600">{uploadProgress}%</span>
                 </div>
                 <div className="w-full h-2 bg-gray-200 rounded-full">
                   <div 
-                    className="h-full bg-blue-600 rounded-full" 
+                    className="h-full bg-blue-600 rounded-full transition-all duration-300" 
                     style={{ width: `${uploadProgress}%` }}
                   ></div>
                 </div>
@@ -301,14 +301,14 @@ export default function ExcelUpload({ onFileUploaded }: ExcelUploadProps) {
             
             {isComplete && (
               <div className="mt-4 flex items-start text-green-600">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                <span className="font-medium">
+                <span className="text-xs sm:text-sm font-medium">
                   Upload complete! The data will be processed, you can track its status in the dashboard.
-                  <br />
+                  <br className="hidden sm:block" />
                   {/* Go to dashboard */}
-                  <Link href="/" className="text-blue-600 hover:underline ml-1">
+                  <Link href="/" className="text-blue-600 hover:underline ml-0 sm:ml-1 inline-block mt-1 sm:mt-0">
                     View Dashboard
                   </Link>
                 </span>
@@ -318,13 +318,13 @@ export default function ExcelUpload({ onFileUploaded }: ExcelUploadProps) {
         </div>
       )}
       
-      <div className="border-t pt-4 mt-4">
-        <h3 className="text-lg font-semibold mb-2">Template Guide</h3>
-        <p className="text-sm text-gray-600 mb-3">
+      <div className="border-t pt-3 sm:pt-4 mt-3 sm:mt-4">
+        <h3 className="text-base sm:text-lg font-semibold mb-2">Template Guide</h3>
+        <p className="text-xs sm:text-sm text-gray-600 mb-3">
           Please ensure your Excel file follows our template format. The spreadsheet should contain the following columns:
         </p>
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <div className="grid grid-cols-2 gap-4 text-sm">
+        <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
             <div>
               <h4 className="font-medium text-gray-700 mb-2">Required Columns:</h4>
               <ul className="list-disc list-inside space-y-1 text-gray-600">

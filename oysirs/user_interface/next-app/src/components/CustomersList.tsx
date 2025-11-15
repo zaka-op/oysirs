@@ -103,66 +103,69 @@ export default function CustomersList() {
   return (
     <div className="bg-white rounded-lg shadow">
       {/* Header with Search Filters */}
-      <form className="p-6 border-b" onSubmit={handleSearch}>
-        <h1 className="text-2xl font-bold mb-6">Customers</h1>
+      <form className="p-4 sm:p-6 border-b" onSubmit={handleSearch}>
+        <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Customers</h1>
         
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
-            <label htmlFor="searchField" className="block text-sm font-medium text-gray-700 mb-1">
-              Search By
-            </label>
-            <select
-              id="searchField"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              value={searchField}
-              onChange={(e) => setSearchField(e.target.value as SearchField)}
-            >
-              <option value="email">Email</option>
-              <option value="mobile_no">Mobile Number</option>
-              <option value="name">Name</option>
-            </select>
-          </div>
-          
-          <div className="flex-1">
-            <label htmlFor="searchValue" className="block text-sm font-medium text-gray-700 mb-1">
-              Search Value
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                id="searchValue"
-                placeholder={`Search by ${searchField}...`}
+        <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="searchField" className="block text-sm font-medium text-gray-700 mb-1">
+                Search By
+              </label>
+              <select
+                id="searchField"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                value={searchValue}
-                onChange={(e) => {
-                  setSearchValue(e.target.value);
-                  // setCurrentPage(1); // Reset to first page on new search
-                }}
-              />
-              {searchValue && (
-                <button
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  onClick={() => setSearchValue("")}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              )}
+                value={searchField}
+                onChange={(e) => setSearchField(e.target.value as SearchField)}
+              >
+                <option value="email">Email</option>
+                <option value="mobile_no">Mobile Number</option>
+                <option value="name">Name</option>
+              </select>
+            </div>
+            
+            <div>
+              <label htmlFor="searchValue" className="block text-sm font-medium text-gray-700 mb-1">
+                Search Value
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  id="searchValue"
+                  placeholder={`Search by ${searchField}...`}
+                  className="w-full px-3 py-2 pr-8 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  value={searchValue}
+                  onChange={(e) => {
+                    setSearchValue(e.target.value);
+                    // setCurrentPage(1); // Reset to first page on new search
+                  }}
+                />
+                {searchValue && (
+                  <button
+                    type="button"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    onClick={() => setSearchValue("")}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
           
-          <div className="self-end flex flex-row gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <button
               type="submit"
-              className="w-full px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="w-full sm:flex-1 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
               // onClick={() => setCurrentPage(1)} // Reset to first page on search
             >
               Search
             </button>
             <button
               type="button"
-              className="w-full px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              className="w-full sm:flex-1 px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
               onClick={handleReset}
             >
               Reset
@@ -176,19 +179,19 @@ export default function CustomersList() {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th scope="col" className="px-2 pl-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 Customer ID
               </th>
-              <th scope="col" className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 Full Name
               </th>
-              <th scope="col" className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 Email
               </th>
-              <th scope="col" className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 Mobile No
               </th>
-              <th scope="col" className="px-2 pr-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 Address
               </th>
               {/* Actions column removed */}
@@ -197,8 +200,8 @@ export default function CustomersList() {
           <tbody className="bg-white divide-y divide-gray-200">
             {(customerListData?.customers.length ?? 0) > 0 ? (
               customerListData!.customers.map((customer) => (
-                <tr key={customer.id} className="hover:bg-gray-50">
-                  <td className="px-2 pl-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <tr key={customer.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-3 sm:px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     <Link
                       href={`/customers/detail?id=${customer.id}`}
                       className="text-blue-600 hover:text-blue-900 underline uppercase"
@@ -206,31 +209,31 @@ export default function CustomersList() {
                       Customer {customer.id}
                     </Link>
                   </td>
-                  <td className="px-2 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <select className="w-full bg-transparent">
+                  <td className="px-3 sm:px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <select className="w-full min-w-[120px] bg-transparent border-0 focus:ring-2 focus:ring-blue-500 rounded">
                       {customer.names.map((item, idx) => (
                         <option key={idx} value={item.name}>{item.name}</option>
                       ))}
                     </select>
                   </td>
-                  <td className="px-2 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <select className="w-full bg-transparent">
+                  <td className="px-3 sm:px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <select className="w-full min-w-[150px] bg-transparent border-0 focus:ring-2 focus:ring-blue-500 rounded">
                       {customer.emails.map((item, idx) => (
                         <option key={idx} value={item.email}>{item.email}</option>
                       ))}
                     </select>
                   </td>
-                  <td className="px-2 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <select className="w-full bg-transparent">
+                  <td className="px-3 sm:px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <select className="w-full min-w-[120px] bg-transparent border-0 focus:ring-2 focus:ring-blue-500 rounded">
                       {customer.mobiles.map((item, idx) => (
                         <option key={idx} value={item.mobile_no}>{item.mobile_no}</option>
                       ))}
                     </select>
                   </td>
-                  <td className="px-2 pr-6 py-4 whitespace-nowrap text-sm text-gray-500 max-w-xs truncate">
-                    <select className="w-full bg-transparent">
+                  <td className="px-3 sm:px-4 lg:px-6 py-4 text-sm text-gray-500 max-w-xs">
+                    <select className="w-full min-w-[150px] bg-transparent border-0 focus:ring-2 focus:ring-blue-500 rounded truncate">
                       {customer.addresses.map((item, idx) => (
-                        <option key={idx} value={item.address}>{item.address}</option>
+                        <option key={idx} value={item.address} className="truncate">{item.address}</option>
                       ))}
                     </select>
                   </td>
@@ -239,8 +242,13 @@ export default function CustomersList() {
               ))
             ) : (
               <tr>
-                <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">
-                  No customers found
+                <td colSpan={5} className="px-6 py-8 text-center text-sm text-gray-500">
+                  <div className="flex flex-col items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    No customers found
+                  </div>
                 </td>
               </tr>
             )}
@@ -250,23 +258,24 @@ export default function CustomersList() {
       
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="px-6 py-4 flex items-center justify-between border-t border-gray-200">
-          <div className="text-sm text-gray-700">
+        <div className="px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-gray-200">
+          <div className="text-xs sm:text-sm text-gray-700 text-center sm:text-left">
             Showing <span className="font-medium">{ offset+1 }</span> to{" "}
-            <span className="font-medium">{offset + limit}</span> of{" "}
+            <span className="font-medium">{Math.min(offset + limit, totalCount)}</span> of{" "}
             <span className="font-medium">{totalCount}</span> customers
           </div>
-          <div className="flex space-x-1">
+          <div className="flex flex-wrap items-center justify-center gap-1">
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className={`relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md ${
+              className={`relative inline-flex items-center px-3 sm:px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                 currentPage === 1
                   ? "text-gray-400 cursor-not-allowed"
                   : "text-gray-700 hover:bg-gray-100"
               }`}
             >
-              Previous
+              <span className="hidden sm:inline">Previous</span>
+              <span className="sm:hidden">&lt;</span>
             </button>
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
               let pageNum;
@@ -284,7 +293,7 @@ export default function CustomersList() {
                 <button
                   key={pageNum}
                   onClick={() => handlePageChange(pageNum)}
-                  className={`relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md ${
+                  className={`relative inline-flex items-center px-3 sm:px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                     currentPage === pageNum
                       ? "bg-blue-600 text-white"
                       : "text-gray-700 hover:bg-gray-100"
@@ -297,13 +306,14 @@ export default function CustomersList() {
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className={`relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md ${
+              className={`relative inline-flex items-center px-3 sm:px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                 currentPage === totalPages
                   ? "text-gray-400 cursor-not-allowed"
                   : "text-gray-700 hover:bg-gray-100"
               }`}
             >
-              Next
+              <span className="hidden sm:inline">Next</span>
+              <span className="sm:hidden">&gt;</span>
             </button>
           </div>
         </div>
