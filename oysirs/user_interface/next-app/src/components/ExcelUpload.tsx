@@ -20,11 +20,12 @@ export default function ExcelUpload({ onFileUploaded }: ExcelUploadProps) {
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isValidating, setIsValidating] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [selectedYear, setSelectedYear] = useState<string>(years[0]);
   const [selectedBank, setSelectedBank] = useState<string>(banks[0].value);
+  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
@@ -45,10 +46,12 @@ export default function ExcelUpload({ onFileUploaded }: ExcelUploadProps) {
       'application/vnd.ms-excel.sheet.macroEnabled.12'
     ];
 
-    setError("Please wait while validating...")
+    setIsValidating(true);
+    setError(null);
     
     if (!validExcelTypes.includes(file.type)) {
       setError("Please upload a valid Excel file (.xls, .xlsx)");
+      setIsValidating(false);
       return false;
     }
     
@@ -56,6 +59,7 @@ export default function ExcelUpload({ onFileUploaded }: ExcelUploadProps) {
     const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
       setError("File is too large. Maximum size is 10MB.");
+      setIsValidating(false);
       return false;
     }
 
@@ -71,50 +75,45 @@ export default function ExcelUpload({ onFileUploaded }: ExcelUploadProps) {
     const missing = REQUIRED_COLUMNS.filter(col => !headerRow.includes(col));
     if (missing.length > 0) {
       setError(`Missing required columns: ${missing.join(", ")}`);
+      setIsValidating(false);
       return false;
     }
     
-    setError(null);
+    setIsValidating(false);
     return true;
   };
 
   const handleFile = async (file: File) => {
+    if (!selectedYear || !selectedBank) {
+      setError("Please select both year and bank before uploading");
+      return;
+    }
+
+    // Show the file name immediately
+    setSelectedFileName(file.name);
+
     if (await validateFile(file)) {
-      
-      if (!selectedYear || !selectedBank) {
-        setError("Please select both year and bank before uploading");
+      setFile(file);
+      setSelectedFileName(null);
+    } else {
+      setSelectedFileName(null);
+    }
+  };
+
+  const handleConfirmUpload = async () => {
+    if (!file) return;
+
+    setIsUploading(true);
+    setError(null);
+
+    if (onFileUploaded) {
+      const err = await onFileUploaded(file, selectedYear, selectedBank);
+      setIsUploading(false);
+      if (err) {
+        setError(err);
         return;
       }
-
-      setFile(file);
-      setIsUploading(true);
-      
-      // Simulate upload progress
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += Math.floor(Math.random() * 10) + 5;
-        if (progress >= 100) {
-          progress = 100;
-          clearInterval(interval);
-          
-          // Simulate processing delay
-          setTimeout(async () => {
-            
-            if (onFileUploaded) {
-              const err = await onFileUploaded(file, selectedYear, selectedBank);
-              setIsUploading(false);
-              if (err) {
-                setError(err);
-                setFile(null);
-                setUploadProgress(0);
-                return;
-              }
-              setIsComplete(true);
-            }
-          }, 500);
-        }
-        setUploadProgress(progress);
-      }, 300);
+      setIsComplete(true);
     }
   };
 
@@ -140,9 +139,10 @@ export default function ExcelUpload({ onFileUploaded }: ExcelUploadProps) {
   const handleReset = () => {
     setFile(null);
     setError(null);
-    setUploadProgress(0);
+    setIsValidating(false);
     setIsUploading(false);
     setIsComplete(false);
+    setSelectedFileName(null);
     // Don't reset year and bank selections to maintain user convenience
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -217,41 +217,65 @@ export default function ExcelUpload({ onFileUploaded }: ExcelUploadProps) {
       </div>
       
       {!file ? (
-        <div 
-          className={`border-2 border-dashed rounded-lg p-6 sm:p-8 mb-4 sm:mb-6 text-center cursor-pointer transition-colors ${
-            isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-blue-400"
-          }`}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          onClick={handleBrowseClick}
-        >
-          <input 
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileInputChange}
-            className="hidden"
-            accept=".xls,.xlsx,.xlsm"
-          />
-          <div className="flex flex-col items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mb-3 sm:mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <p className="text-base sm:text-lg font-medium text-gray-700">
-              {isDragging ? "Drop Excel file here" : "Drag and drop Excel file here"}
-            </p>
-            <p className="text-xs sm:text-sm text-gray-500 mt-1">or</p>
-            <button className="mt-2 px-4 py-2 text-xs sm:text-sm text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
-              Browse Excel Files
-            </button>
-            <p className="text-xs text-gray-500 mt-2">
-              Supported formats: .xlsx, .xls (Max size: 10MB)
-            </p>
-            {error && (
-              <p className="text-xs sm:text-sm text-red-600 mt-2">{error}</p>
-            )}
+        <>
+          <div 
+            className={`border-2 border-dashed rounded-lg p-6 sm:p-8 mb-4 sm:mb-6 text-center cursor-pointer transition-colors ${
+              isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-blue-400"
+            }`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            onClick={handleBrowseClick}
+          >
+            <input 
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileInputChange}
+              className="hidden"
+              accept=".xls,.xlsx,.xlsm"
+            />
+            <div className="flex flex-col items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mb-3 sm:mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <p className="text-base sm:text-lg font-medium text-gray-700">
+                {isDragging ? "Drop Excel file here" : "Drag and drop Excel file here"}
+              </p>
+              <p className="text-xs sm:text-sm text-gray-500 mt-1">or</p>
+              <button className="mt-2 px-4 py-2 text-xs sm:text-sm text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                Browse Excel Files
+              </button>
+              <p className="text-xs text-gray-500 mt-2">
+                Supported formats: .xlsx, .xls (Max size: 10MB)
+              </p>
+              {error && (
+                <p className="text-xs sm:text-sm text-red-600 mt-2">{error}</p>
+              )}
+            </div>
           </div>
-        </div>
+
+          {/* Processing message */}
+          {selectedFileName && (
+            <div className="mb-4 sm:mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </div>
+                <div className="ml-3 flex-1">
+                  <p className="text-sm font-medium text-blue-800">
+                    Processing file: <span className="font-semibold">{selectedFileName}</span>
+                  </p>
+                  <p className="text-xs text-blue-600 mt-1">
+                    Please wait while we validate your file...
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       ) : (
         <div className="mb-4 sm:mb-6">
           <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
@@ -284,17 +308,41 @@ export default function ExcelUpload({ onFileUploaded }: ExcelUploadProps) {
               </button>
             </div>
             
+            {isValidating && (
+              <div className="mt-4">
+                <div className="flex items-center mb-2">
+                  <span className="text-xs sm:text-sm font-medium text-blue-600">Validating file...</span>
+                </div>
+                <div className="w-full h-1 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue-600 animate-progress"></div>
+                </div>
+              </div>
+            )}
+
+            {!isValidating && !isUploading && !isComplete && (
+              <div className="mt-4">
+                <button
+                  onClick={handleConfirmUpload}
+                  className="w-full px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors flex items-center justify-center gap-2"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  Confirm and Upload File
+                </button>
+                {error && (
+                  <p className="text-xs sm:text-sm text-red-600 mt-2 text-center">{error}</p>
+                )}
+              </div>
+            )}
+            
             {isUploading && (
               <div className="mt-4">
-                <div className="flex justify-between mb-1">
-                  <span className="text-xs sm:text-sm font-medium text-blue-600">Uploading...</span>
-                  <span className="text-xs sm:text-sm font-medium text-blue-600">{uploadProgress}%</span>
+                <div className="flex items-center mb-2">
+                  <span className="text-xs sm:text-sm font-medium text-blue-600">Uploading to server...</span>
                 </div>
-                <div className="w-full h-2 bg-gray-200 rounded-full">
-                  <div 
-                    className="h-full bg-blue-600 rounded-full transition-all duration-300" 
-                    style={{ width: `${uploadProgress}%` }}
-                  ></div>
+                <div className="w-full h-1 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue-600 animate-progress"></div>
                 </div>
               </div>
             )}
