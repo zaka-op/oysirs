@@ -27,6 +27,9 @@ export default function ExcelUpload({ onFileUploaded }: ExcelUploadProps) {
   const [selectedBank, setSelectedBank] = useState<string>(banks[0].value);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const maxSize = process.env.NEXT_PUBLIC_MAX_UPLOAD_SIZE_MB
+    ? parseInt(process.env.NEXT_PUBLIC_MAX_UPLOAD_SIZE_MB) * 1024 * 1024
+    : 10 * 1024 * 1024; // Default to 10MB if not set
   
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -55,10 +58,8 @@ export default function ExcelUpload({ onFileUploaded }: ExcelUploadProps) {
       return false;
     }
     
-    // Check file size (max 10MB)
-    const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
-      setError("File is too large. Maximum size is 10MB.");
+      setError(`File is too large. Maximum size is ${formatFileSize(maxSize)}.`);
       setIsValidating(false);
       return false;
     }
@@ -246,7 +247,7 @@ export default function ExcelUpload({ onFileUploaded }: ExcelUploadProps) {
                 Browse Excel Files
               </button>
               <p className="text-xs text-gray-500 mt-2">
-                Supported formats: .xlsx, .xls (Max size: 10MB)
+                Supported formats: .xlsx, .xls (Max size: {formatFileSize(maxSize)})
               </p>
               {error && (
                 <p className="text-xs sm:text-sm text-red-600 mt-2">{error}</p>

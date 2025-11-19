@@ -25,6 +25,19 @@ export const generateBankOptions = () => {
     { value: "STERLING", label: "Sterling Bank" },
     { value: "POLARIS", label: "Polaris Bank" },
     { value: "WEMA", label: "Wema Bank" },
+    { value: "PROVIDUS", label: "Providus Bank" },
+    { value: "JAIZ", label: "Jaiz Bank" },
+    { value: "CITIBANK", label: "Citibank" },
+    { value: "HERITAGE", label: "Heritage Bank" },
+    { value: "KEYSTONE", label: "Keystone Bank" },
+    { value: "SUNTRUST", label: "Suntrust Bank" },
+    { value: "VFD", label: "VFD Microfinance Bank" },
+    { value: "STANBIC", label: "Stanbic IBTC Bank" },
+    { value: "FIDELITY", label: "Fidelity Bank" },
+    { value: "UNION", label: "Union Bank" },
+    { value: "GLOBUS", label: "Globus Bank" },
+    { value: "OPTIMUS", label: "Optimus Bank" },
+    { value: "PREMIUMTRUST", label: "Premium Trust Bank" },
   ];
 };
 
