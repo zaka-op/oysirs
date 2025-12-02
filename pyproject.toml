@@ -38,9 +38,9 @@ post-install-commands = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/ahmadkhidir/-#readme"
-Issues = "https://github.com/ahmadkhidir/-/issues"
-Source = "https://github.com/ahmadkhidir/-"
+Documentation = "https://github.com/ahmadkhidir/oysirs#readme"
+Issues = "https://github.com/ahmadkhidir/oysirs/issues"
+Source = "https://github.com/ahmadkhidir/oysirs"
 
 [tool.hatch.version]
 path = "oysirs/__about__.py"
