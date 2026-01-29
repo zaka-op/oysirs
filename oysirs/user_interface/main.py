@@ -11,7 +11,7 @@ from constructs import Construct
 from pathlib import Path
 from typing import TypedDict
 
-from ..shared.main import Shared
+from ..shared.main import Shared, MyLocalBundler
 
 
 class UserInterfaceConfig(TypedDict):
@@ -56,11 +56,22 @@ class UserInterface(Construct):
         )
 
         # Deploy static files to the S3 bucket
+        project_path = str(Path(__file__).parent.joinpath("next-app").resolve())
         s3_deploy.BucketDeployment(
             self, "DeployUserInterface",
             sources=[
                 s3_deploy.Source.asset(
-                    path=str(Path(__file__).parent.joinpath("next-app/out").resolve())
+                    path=project_path,
+                    bundling=BundlingOptions(
+                        image=_lambda.Runtime.NODEJS_LATEST.bundling_image,
+                        command=[
+                            "bash", "-c",
+                            "npm install && npm run build && cp -r out/* /asset-output/"
+                        ],
+                        # Pass an instance of your custom class here
+                        local=MyLocalBundler(project_path)
+                    ),
+                    exclude=["**/node_modules/**", "**/.next/**", "**/out/**"],
                 ),
             ],
             destination_bucket=ui_bucket,

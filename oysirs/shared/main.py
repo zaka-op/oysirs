@@ -63,3 +63,24 @@ class Shared(Construct):
                 layer_type="toml"
             )
         ).layer
+
+
+# TODO: Improve generalization, error handling and logging
+@jsii.implements(ILocalBundling)
+class MyLocalBundler:
+    def __init__(self, project_root):
+        self.project_root = project_root
+
+    def try_bundle(self, output_dir: str, options) -> bool:
+        try:
+            # 1. Install dependencies
+            subprocess.run(["npm", "install"], cwd=self.project_root, check=True)
+            # 2. Run the Next.js build
+            subprocess.run(["npm", "run", "build"], cwd=self.project_root, check=True)
+            # 3. Copy the 'out' folder contents to the CDK output directory
+            dist_dir = os.path.join(self.project_root, "out")
+            shutil.copytree(dist_dir, output_dir, dirs_exist_ok=True)
+            return True
+        except Exception as e:
+            print(f"Local bundling failed: {e}")
+            return False
