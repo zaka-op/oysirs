@@ -2,13 +2,17 @@ from aws_cdk import (
     aws_ec2 as ec2,
     aws_lambda as _lambda,
     Aws,
-    RemovalPolicy
+    RemovalPolicy,
+    ILocalBundling
 )
 from constructs import Construct
 from ..layer import Layer, LayerConfig
 from typing import TypedDict
 from pathlib import Path
-
+import jsii
+import subprocess
+import shutil
+import os
 
 class SharedConfig(TypedDict):
     pass

@@ -3,6 +3,8 @@ from aws_cdk import (
     aws_s3_deployment as s3_deploy,
     aws_cloudfront as cloudfront,
     aws_cloudfront_origins as cloudfront_origins,
+    aws_lambda as _lambda,
+    BundlingOptions,
     RemovalPolicy,
     Duration,
     CfnOutput,
