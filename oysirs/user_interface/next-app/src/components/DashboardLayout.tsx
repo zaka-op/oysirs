@@ -10,7 +10,7 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const { user} = useAuth();
+  const { user } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -47,7 +47,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     <div className="min-h-screen bg-gray-50 flex">
       {/* Mobile overlay */}
       {isSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
@@ -62,14 +62,29 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         lg:translate-x-0
       `}>
         <div className="px-6 py-4 border-b border-b-gray-200 flex items-center justify-between">
-          <div className={`${isCollapsed ? 'hidden lg:hidden' : ''}`}>
-            <h1 className="text-xl font-bold">OYSIRS</h1>
-            <p className="text-sm text-gray-500">
-              {true ? "Admin Dashboard" : "Staff Dashboard"}
-            </p>
+          <div className={`${isCollapsed ? 'hidden lg:hidden' : 'flex items-center gap-3'}`}>
+            <Image
+              src="/oyo-logo.png"
+              alt="Oyo State Logo"
+              width={50}
+              height={50}
+              className="object-contain"
+            />
+            <div>
+              <h1 className="text-xl font-bold">OYSIRS</h1>
+              <p className="text-sm text-gray-500">
+                {true ? "Admin Dashboard" : "Staff Dashboard"}
+              </p>
+            </div>
           </div>
           {isCollapsed && (
-            <h1 className="text-xl font-bold hidden lg:block mx-auto">O</h1>
+            <Image
+              src="/oyo-logo.png"
+              alt="Oyo State Logo"
+              width={40}
+              height={40}
+              className="hidden lg:block mx-auto object-contain"
+            />
           )}
           {/* Desktop collapse toggle */}
           <button
@@ -77,28 +92,27 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             className="hidden lg:block p-1 rounded hover:bg-gray-100 ml-auto"
             aria-label="Toggle sidebar"
           >
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
               className={`h-5 w-5 transition-transform ${isCollapsed ? 'rotate-180' : ''}`}
-              fill="none" 
-              viewBox="0 0 24 24" 
+              fill="none"
+              viewBox="0 0 24 24"
               stroke="currentColor"
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
             </svg>
           </button>
         </div>
-        
+
         <nav className="mt-6 px-4">
           <ul>
             {navItems.map((item) => (
               <li key={item.path} className="mb-2">
-                <Link 
+                <Link
                   href={item.path}
                   onClick={() => setIsSidebarOpen(false)}
-                  className={`flex items-center px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors ${
-                    pathname === item.path ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
-                  } ${isCollapsed ? 'lg:justify-center lg:px-2' : ''}`}
+                  className={`flex items-center px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors ${pathname === item.path ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
+                    } ${isCollapsed ? 'lg:justify-center lg:px-2' : ''}`}
                   title={isCollapsed ? item.name : ''}
                 >
                   <Image
@@ -114,7 +128,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             ))}
           </ul>
         </nav>
-        
+
         <div className={`absolute bottom-0 w-full border-t border-t-gray-200 p-4 ${isCollapsed ? 'lg:px-2' : ''}`}>
           <div className={`flex items-center ${isCollapsed ? 'lg:justify-center' : ''}`}>
             <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold shrink-0">
@@ -129,19 +143,18 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             type="button"
             onClick={signOutRedirect}
             aria-label="Logout"
-            className={`w-full mt-3 inline-flex items-center justify-center px-3 py-2 rounded-md bg-red-600 text-white text-sm font-medium shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-colors ${
-              isCollapsed ? 'lg:px-2' : ''
-            }`}
+            className={`w-full mt-3 inline-flex items-center justify-center px-3 py-2 rounded-md bg-red-600 text-white text-sm font-medium shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-colors ${isCollapsed ? 'lg:px-2' : ''
+              }`}
             title={isCollapsed ? 'Logout' : ''}
           >
             {isCollapsed ? (
               <>
                 <span className="lg:hidden">Logout</span>
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  className="h-5 w-5 hidden lg:block" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 hidden lg:block"
+                  fill="none"
+                  viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -153,12 +166,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </button>
         </div>
       </div>
-      
+
       {/* Main Content */}
       <div className={`flex-1 transition-all duration-300 ${isCollapsed ? 'lg:ml-20' : 'lg:ml-64'}`}>
-        <header className={`bg-white shadow-sm h-16 fixed z-10 transition-all duration-300 ${
-          isCollapsed ? 'lg:w-[calc(100%-5rem)] lg:left-20' : 'lg:w-[calc(100%-16rem)] lg:left-64'
-        } w-full left-0`}>
+        <header className={`bg-white shadow-sm h-16 fixed z-10 transition-all duration-300 ${isCollapsed ? 'lg:w-[calc(100%-5rem)] lg:left-20' : 'lg:w-[calc(100%-16rem)] lg:left-64'
+          } w-full left-0`}>
           <div className="h-full px-4 sm:px-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <button
@@ -189,7 +201,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
           </div>
         </header>
-        
+
         <main className="pt-24 pb-8 px-4 sm:px-6">
           {children}
         </main>

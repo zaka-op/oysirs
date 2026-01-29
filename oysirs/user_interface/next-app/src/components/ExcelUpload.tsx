@@ -381,6 +381,9 @@ export default function ExcelUpload({ onFileUploaded }: ExcelUploadProps) {
                 <li>Email Address [EMAIL]</li>
                 <li>Mobile Number [MOBILE_NO]</li>
                 <li>Address [ADDRESS]</li>
+                <li>Tax ID [TAX_ID] (Optional)</li>
+                <li>TIN [TIN] (Optional)</li>
+                <li>RC [RC] (Optional)</li>
                 <li>Transaction Date [TRXN_DATE]</li>
                 <li>Transaction Amount [TRXN_AMOUNT]</li>
               </ul>

@@ -29,7 +29,7 @@ import { useHulkFetch } from "hulk-react-utils";
 // Export the mock data function for static generation
 // export const getMockCustomers = () => mockCustomers;
 
-type SearchField = "email" | "mobile_no" | "name";
+type SearchField = "email" | "mobile_no" | "name" | "tax_id" | "tin" | "rc";
 
 export default function CustomersList() {
   const [searchField, setSearchField] = useState<SearchField>("email");
@@ -50,7 +50,7 @@ export default function CustomersList() {
       method: "GET",
     })
   }, []);
-  
+
 
   // Pagination
   const limit = customerListData?.limit || 10;
@@ -105,7 +105,7 @@ export default function CustomersList() {
       {/* Header with Search Filters */}
       <form className="p-4 sm:p-6 border-b" onSubmit={handleSearch}>
         <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Customers</h1>
-        
+
         <div className="flex flex-col gap-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -121,9 +121,12 @@ export default function CustomersList() {
                 <option value="email">Email</option>
                 <option value="mobile_no">Mobile Number</option>
                 <option value="name">Name</option>
+                <option value="tax_id">Tax ID</option>
+                <option value="tin">TIN</option>
+                <option value="rc">RC</option>
               </select>
             </div>
-            
+
             <div>
               <label htmlFor="searchValue" className="block text-sm font-medium text-gray-700 mb-1">
                 Search Value
@@ -154,12 +157,12 @@ export default function CustomersList() {
               </div>
             </div>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row gap-2">
             <button
               type="submit"
               className="w-full sm:flex-1 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-              // onClick={() => setCurrentPage(1)} // Reset to first page on search
+            // onClick={() => setCurrentPage(1)} // Reset to first page on search
             >
               Search
             </button>
@@ -173,7 +176,7 @@ export default function CustomersList() {
           </div>
         </div>
       </form>
-      
+
       {/* Customers Table */}
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
@@ -255,12 +258,12 @@ export default function CustomersList() {
           </tbody>
         </table>
       </div>
-      
+
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-gray-200">
           <div className="text-xs sm:text-sm text-gray-700 text-center sm:text-left">
-            Showing <span className="font-medium">{ offset+1 }</span> to{" "}
+            Showing <span className="font-medium">{offset + 1}</span> to{" "}
             <span className="font-medium">{Math.min(offset + limit, totalCount)}</span> of{" "}
             <span className="font-medium">{totalCount}</span> customers
           </div>
@@ -268,11 +271,10 @@ export default function CustomersList() {
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className={`relative inline-flex items-center px-3 sm:px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                currentPage === 1
+              className={`relative inline-flex items-center px-3 sm:px-4 py-2 text-sm font-medium rounded-md transition-colors ${currentPage === 1
                   ? "text-gray-400 cursor-not-allowed"
                   : "text-gray-700 hover:bg-gray-100"
-              }`}
+                }`}
             >
               <span className="hidden sm:inline">Previous</span>
               <span className="sm:hidden">&lt;</span>
@@ -288,16 +290,15 @@ export default function CustomersList() {
               } else {
                 pageNum = currentPage - 2 + i;
               }
-              
+
               return (
                 <button
                   key={pageNum}
                   onClick={() => handlePageChange(pageNum)}
-                  className={`relative inline-flex items-center px-3 sm:px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                    currentPage === pageNum
+                  className={`relative inline-flex items-center px-3 sm:px-4 py-2 text-sm font-medium rounded-md transition-colors ${currentPage === pageNum
                       ? "bg-blue-600 text-white"
                       : "text-gray-700 hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   {pageNum}
                 </button>
@@ -306,11 +307,10 @@ export default function CustomersList() {
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className={`relative inline-flex items-center px-3 sm:px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                currentPage === totalPages
+              className={`relative inline-flex items-center px-3 sm:px-4 py-2 text-sm font-medium rounded-md transition-colors ${currentPage === totalPages
                   ? "text-gray-400 cursor-not-allowed"
                   : "text-gray-700 hover:bg-gray-100"
-              }`}
+                }`}
             >
               <span className="hidden sm:inline">Next</span>
               <span className="sm:hidden">&gt;</span>

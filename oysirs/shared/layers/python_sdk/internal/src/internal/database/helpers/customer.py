@@ -49,12 +49,24 @@ def insert_or_update_customer(customer: CustomerModel) -> int:
         if customer.addresses:
             addresses = [{"address": entry.address, "customer_id": customer_id} for entry in customer.addresses]
             session.execute(insert(CustomerAddress).values(addresses).on_conflict_do_nothing())
+        if customer.tax_ids:
+            tax_ids = [{"tax_id": entry.tax_id, "customer_id": customer_id} for entry in customer.tax_ids]
+            session.execute(insert(CustomerTaxId).values(tax_ids).on_conflict_do_nothing())
+        if customer.tins:
+            tins = [{"tin": entry.tin, "customer_id": customer_id} for entry in customer.tins]
+            session.execute(insert(CustomerTin).values(tins).on_conflict_do_nothing())
+        if customer.rcs:
+            rcs = [{"rc": entry.rc, "customer_id": customer_id} for entry in customer.rcs]
+            session.execute(insert(CustomerRc).values(rcs).on_conflict_do_nothing())
     return customer_id
 
 def list_customers(
         name: str | None = None,
         email: str | None = None,
         mobile_no: str | None = None,
+        tax_id: str | None = None,
+        tin: str | None = None,
+        rc: str | None = None,
         offset: int = 0,
         limit: int = 10,
 ) -> CustomerListModel:
@@ -65,6 +77,9 @@ def list_customers(
         name (str | None): The name of the customer to filter by.
         email (str | None): The email of the customer to filter by.
         mobile_no (str | None): The mobile number of the customer to filter by.
+        tax_id (str | None): The tax ID of the customer to filter by.
+        tin (str | None): The TIN of the customer to filter by.
+        rc (str | None): The RC of the customer to filter by.
         offset (int): The offset for pagination.
         limit (int): The maximum number of records to return.
 
@@ -83,6 +98,12 @@ def list_customers(
             query = query.join(Customer.emails).filter(CustomerEmail.email.ilike(f"%{email}%"))
         if mobile_no:
             query = query.join(Customer.mobiles).filter(CustomerMobileNo.mobile_no.ilike(f"%{mobile_no}%"))
+        if tax_id:
+            query = query.join(Customer.tax_ids).filter(CustomerTaxId.tax_id.ilike(f"%{tax_id}%"))
+        if tin:
+            query = query.join(Customer.tins).filter(CustomerTin.tin.ilike(f"%{tin}%"))
+        if rc:
+            query = query.join(Customer.rcs).filter(CustomerRc.rc.ilike(f"%{rc}%"))
 
         # Count total before applying pagination
         count_query = sa.select(sa.func.count()).select_from(
@@ -98,6 +119,9 @@ def list_customers(
             joinedload(Customer.addresses),
             joinedload(Customer.mobiles),
             joinedload(Customer.emails),
+            joinedload(Customer.tax_ids),
+            joinedload(Customer.tins),
+            joinedload(Customer.rcs),
         ).distinct()
 
         # Pagination
@@ -133,4 +157,40 @@ def get_customer_id_from_mobile_nos(mobile_nos: list[str]) -> int | None:
     with get_session() as session:
         return session.scalar(
             sa.select(CustomerMobileNo.customer_id).where(CustomerMobileNo.mobile_no.in_(mobile_nos))
+        )
+
+def get_customer_id_from_tax_ids(tax_ids: list[str]) -> int | None:
+    """
+    Retrieve a customer ID from the customers_tax_id table by their tax ID.
+
+    Args:
+        tax_ids (list[str]): The list of tax IDs to search for.
+    """
+    with get_session() as session:
+        return session.scalar(
+            sa.select(CustomerTaxId.customer_id).where(CustomerTaxId.tax_id.in_(tax_ids))
+        )
+
+def get_customer_id_from_tins(tins: list[str]) -> int | None:
+    """
+    Retrieve a customer ID from the customers_tin table by their TIN.
+
+    Args:
+        tins (list[str]): The list of TINs to search for.
+    """
+    with get_session() as session:
+        return session.scalar(
+            sa.select(CustomerTin.customer_id).where(CustomerTin.tin.in_(tins))
+        )
+
+def get_customer_id_from_rcs(rcs: list[str]) -> int | None:
+    """
+    Retrieve a customer ID from the customers_rc table by their RC.
+
+    Args:
+        rcs (list[str]): The list of RCs to search for.
+    """
+    with get_session() as session:
+        return session.scalar(
+            sa.select(CustomerRc.customer_id).where(CustomerRc.rc.in_(rcs))
         )

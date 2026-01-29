@@ -38,6 +38,9 @@ def list_customers(
     name: Annotated[str | None, Query()] = None,
     email: Annotated[str | None, Query()] = None,
     mobile_no: Annotated[str | None, Query()] = None,
+    tax_id: Annotated[str | None, Query()] = None,
+    tin: Annotated[str | None, Query()] = None,
+    rc: Annotated[str | None, Query()] = None,
     offset: Annotated[int, Query()] = 0,
     limit: Annotated[int, Query()] = 10,
 ) -> CustomerListModel:
@@ -48,6 +51,9 @@ def list_customers(
         name=name,
         email=email,
         mobile_no=mobile_no,
+        tax_id=tax_id,
+        tin=tin,
+        rc=rc,
         offset=offset,
         limit=limit,
     )

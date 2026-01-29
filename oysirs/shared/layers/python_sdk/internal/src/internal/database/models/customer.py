@@ -17,11 +17,24 @@ class CustomerMobileNoModel(BaseModel):
 class CustomerEmailModel(BaseModel):
     email: str
 
+class CustomerTaxIdModel(BaseModel):
+    tax_id: str
+
+class CustomerTinModel(BaseModel):
+    tin: str
+
+class CustomerRcModel(BaseModel):
+    rc: str
+
 class CustomerModel(BaseModel):
     names: list[CustomerNameModel] = []
     addresses: list[CustomerAddressModel] = []
     mobiles: list[CustomerMobileNoModel] = []
     emails: list[CustomerEmailModel] = []
+    tax_ids: list[CustomerTaxIdModel] = []
+    tins: list[CustomerTinModel] = []
+    rcs: list[CustomerRcModel] = []
+
 
 class CustomerListModel(CleanBaseModel):
     customers: list[CustomerModel] = []

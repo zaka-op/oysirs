@@ -6,6 +6,9 @@ from internal.database.helpers.customer import (
     list_customers, 
     get_customer_id_from_emails,
     get_customer_id_from_mobile_nos,
+    get_customer_id_from_tax_ids,
+    get_customer_id_from_tins,
+    get_customer_id_from_rcs,
     insert_or_update_customer,
 )
 from internal.database.helpers.upload import (
@@ -78,17 +81,29 @@ def handler():
             mobile_nos = parse_mobile_no(row.get("MOBILE_NO"))
             names = parse_name(row.get("NAME"))
             address = parse_address(row.get("ADDRESS"))
+            tax_ids = parse_name(row.get("TAX_ID"))  # Reuse parse_name for simple string parsing
+            tins = parse_name(row.get("TIN"))
+            rcs = parse_name(row.get("RC"))
 
             customer_id = get_customer_id_from_emails(emails)
             if not customer_id:
                 customer_id = get_customer_id_from_mobile_nos(mobile_nos)
+            if not customer_id and tax_ids:
+                customer_id = get_customer_id_from_tax_ids(tax_ids)
+            if not customer_id and tins:
+                customer_id = get_customer_id_from_tins(tins)
+            if not customer_id and rcs:
+                customer_id = get_customer_id_from_rcs(rcs)
             customer_id = insert_or_update_customer(
                 CustomerModel(
                     id=customer_id,
                     names=[CustomerNameModel(name=n) for n in names],
                     emails=[CustomerEmailModel(email=e) for e in emails],
                     mobiles=[CustomerMobileNoModel(mobile_no=m) for m in mobile_nos],
-                    addresses=[CustomerAddressModel(address=address)] if address else []
+                    addresses=[CustomerAddressModel(address=address)] if address else [],
+                    tax_ids=[CustomerTaxIdModel(tax_id=t) for t in tax_ids],
+                    tins=[CustomerTinModel(tin=t) for t in tins],
+                    rcs=[CustomerRcModel(rc=r) for r in rcs]
                 )
             )
             customer_ids.append(customer_id)
