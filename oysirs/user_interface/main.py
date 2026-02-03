@@ -70,6 +70,16 @@ class UserInterface(Construct):
                             "bash", "-c",
                             "npm install && npm run build && cp -r out/* /asset-output/"
                         ],
+                        environment={
+                            "NEXT_PUBLIC_BASE_API_URL": "https://hdmf6m3sz5.execute-api.af-south-1.amazonaws.com",
+                            "NEXT_PUBLIC_COGNITO_AUTHORITY": "https://cognito-idp.af-south-1.amazonaws.com/af-south-1_92Fh2H2dc",
+                            "NEXT_PUBLIC_COGNITO_CLIENT_ID": "3fghes7a76ns86qss55fjbj8ca",
+                            "NEXT_PUBLIC_COGNITO_REDIRECT_URI": f"https://{distribution.domain_name}/",
+                            "NEXT_PUBLIC_COGNITO_RESPONSE_TYPE": "code",
+                            "NEXT_PUBLIC_COGNITO_SCOPE": "aws.cognito.signin.user.admin email openid phone profile",
+                            "NEXT_PUBLIC_COGNITO_DOMAIN": "https://oysirs-auth-domain.auth.af-south-1.amazoncognito.com",
+                            "NEXT_PUBLIC_MAX_UPLOAD_SIZE_MB": "50",
+                        },
                         # Pass an instance of your custom class here
                         local=MyLocalBundler(project_path)
                     ),
