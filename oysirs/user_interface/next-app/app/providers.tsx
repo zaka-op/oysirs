@@ -2,7 +2,7 @@
 
 import {ErrorOverlay, LoadingOverlay} from "@/components/Overlay";
 import { withHulk } from "hulk-react-utils";
-import { useAuth } from "react-oidc-context";
+import { useAuth, withAuthenticationRequired } from "react-oidc-context";
 import { AuthProvider } from "react-oidc-context";
 
 
@@ -23,7 +23,7 @@ function HulkProvider({ children }: { children: React.ReactNode }) {
             replaceDuplicates: true,
         },
         fetchGlobalOptions: {
-            baseUrl: "https://hdmf6m3sz5.execute-api.af-south-1.amazonaws.com",
+            baseUrl: process.env.NEXT_PUBLIC_BASE_API_URL,
             accessTokenRetriever: async () => {
                 console.log(`Retrieved access token for fetch requests: ${auth?.user?.access_token}`);
                 return {
@@ -61,11 +61,15 @@ function HulkProvider({ children }: { children: React.ReactNode }) {
     })({children});
 }
 
+const ProtectedContent = withAuthenticationRequired(({ children }: { children: React.ReactNode }) => children);
+
 export default function AppProvider({ children }: { children: React.ReactNode }) {
     return (
         <AuthProvider {...cognitoAuthConfig}>
             <HulkProvider>
-                {children}
+                <ProtectedContent>
+                    {children}
+                </ProtectedContent>
             </HulkProvider>
         </AuthProvider>
     );

@@ -78,7 +78,7 @@ class MyLocalBundler:
     def try_bundle(self, output_dir: str, options) -> bool:
         try:
             # 1. Install dependencies
-            subprocess.run(["npm", "install"], cwd=self.project_root, check=True)
+            subprocess.run(["npm", "install", "--legacy-peer-deps"], cwd=self.project_root, check=True)
             # 2. Run the Next.js build
             subprocess.run(["npm", "run", "build"], cwd=self.project_root, check=True)
             # 3. Copy the 'out' folder contents to the CDK output directory
