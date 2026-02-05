@@ -57,6 +57,8 @@ class UserInterface(Construct):
             comment="CloudFront distribution for Oysirs user interface",
         )
 
+        self.domain_name = f"https://{distribution.domain_name}"
+
         # Deploy static files to the S3 bucket
         project_path = str(Path(__file__).parent.joinpath("next-app").resolve())
         s3_deploy.BucketDeployment(
@@ -74,7 +76,7 @@ class UserInterface(Construct):
                             "NEXT_PUBLIC_BASE_API_URL": "https://hdmf6m3sz5.execute-api.af-south-1.amazonaws.com",
                             "NEXT_PUBLIC_COGNITO_AUTHORITY": "https://cognito-idp.af-south-1.amazonaws.com/af-south-1_92Fh2H2dc",
                             "NEXT_PUBLIC_COGNITO_CLIENT_ID": "3fghes7a76ns86qss55fjbj8ca",
-                            "NEXT_PUBLIC_COGNITO_REDIRECT_URI": f"https://{distribution.domain_name}/",
+                            "NEXT_PUBLIC_COGNITO_REDIRECT_URI": self.domain_name,
                             "NEXT_PUBLIC_COGNITO_RESPONSE_TYPE": "code",
                             "NEXT_PUBLIC_COGNITO_SCOPE": "aws.cognito.signin.user.admin email openid phone profile",
                             "NEXT_PUBLIC_COGNITO_DOMAIN": "https://oysirs-auth-domain.auth.af-south-1.amazoncognito.com",
@@ -90,8 +92,6 @@ class UserInterface(Construct):
             distribution=distribution,
             distribution_paths=["/*"],
         )
-
-        self.domain_name = f"https://{distribution.domain_name}"
 
         # Output the CloudFront distribution domain name
         CfnOutput(
