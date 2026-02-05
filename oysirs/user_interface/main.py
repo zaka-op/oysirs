@@ -57,7 +57,7 @@ class UserInterface(Construct):
             comment="CloudFront distribution for Oysirs user interface",
         )
 
-        self.domain_name = f"https://{distribution.domain_name}"
+        self.domain_name = f"https://do6b95i949ixa.cloudfront.net"
 
         # Deploy static files to the S3 bucket
         project_path = str(Path(__file__).parent.joinpath("next-app").resolve())
