@@ -70,6 +70,7 @@ class Authentications(Construct):
                     cognito.OAuthScope.PROFILE,
                     cognito.OAuthScope.EMAIL,
                     cognito.OAuthScope.PHONE,
+                    cognito.OAuthScope.COGNITO_ADMIN,
                 ],
             ),
         )
