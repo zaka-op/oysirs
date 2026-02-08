@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import DashboardLayout from "@/components/DashboardLayout";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { RepoProvider } from "@/lib/contexts/repo";
+import { AuthProvider } from "react-oidc-context";
 import AppProvider from "./providers";
 
 
@@ -25,6 +28,14 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const queryClient = new QueryClient();
+    const cognitoAuthConfig = {
+        authority: process.env.NEXT_PUBLIC_COGNITO_AUTHORITY,
+        client_id: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID,
+        redirect_uri: process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI,
+        response_type: process.env.NEXT_PUBLIC_COGNITO_RESPONSE_TYPE,
+        scope: process.env.NEXT_PUBLIC_COGNITO_SCOPE,
+    };
     return (
         <html lang="en">
             <body

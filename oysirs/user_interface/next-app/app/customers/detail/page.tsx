@@ -7,6 +7,8 @@ import Link from "next/link";
 import { useHulkFetch } from "hulk-react-utils";
 import { CustomerWithTrxnSummaryProps } from "@/lib/types/customers";
 import { generateYearOptions, generateBankOptions } from "@/lib/utils/options";
+import { useRepo } from "@/lib/contexts/repo";
+import { useQuery } from "@tanstack/react-query";
 
 
 function CustomerDetail() {
@@ -19,27 +21,35 @@ function CustomerDetail() {
   const [selectedYear, setSelectedYear] = useState<string>(years[0]);
   const [selectedBank, setSelectedBank] = useState<string>(banks[0].value);
 
-  const {
-    dispatch: dispatchCustomerSummary,
-    data: customerSummaryData,
-  } = useHulkFetch<CustomerWithTrxnSummaryProps>(`/prod/customers/${customerId}`);
+  // const {
+  //   dispatch: dispatchCustomerSummary,
+  //   data: customerSummaryData,
+  // } = useHulkFetch<CustomerWithTrxnSummaryProps>(`/prod/customers/${customerId}`);
 
-  useEffect(() => {
-    if (customerId) {
-      const query: any = {};
-      if (selectedYear) {
-        query.year = selectedYear;
-      }
-      if (selectedBank) {
-        query.bank = selectedBank;
-      }
+  // useEffect(() => {
+  //   if (customerId) {
+  //     const query: any = {};
+  //     if (selectedYear) {
+  //       query.year = selectedYear;
+  //     }
+  //     if (selectedBank) {
+  //       query.bank = selectedBank;
+  //     }
 
-      dispatchCustomerSummary({
-        method: "GET",
-        query: query,
-      });
-    }
-  }, [customerId, selectedYear, selectedBank]);
+  //     dispatchCustomerSummary({
+  //       method: "GET",
+  //       query: query,
+  //     });
+  //   }
+  // }, [customerId, selectedYear, selectedBank]);
+
+
+  const repo = useRepo();
+  const { data: customerSummaryData } = useQuery({
+    queryKey: ["customer-data", customerId, selectedYear, selectedBank],
+    queryFn: () => repo.getCustomerData(customerId, selectedYear, selectedBank),
+  });
+
 
   // Fetch customer data (mock)
   // useEffect(() => {

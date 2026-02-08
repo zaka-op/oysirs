@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.90.20",
     "hulk-react-utils": "^1.0.8",
     "js-cookie": "^3.0.5",
     "next": "16.1.6",

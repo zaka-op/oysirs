@@ -2,8 +2,8 @@ from aws_cdk import (
     aws_rds as rds,
     aws_ec2 as ec2,
     aws_lambda as _lambda,
+    aws_s3_assets as s3_assets,
     custom_resources as cr,
-    RemovalPolicy,
     SecretValue,
     Duration,
     CustomResource,
@@ -24,20 +24,23 @@ class Databases(Construct):
         super().__init__(scope, id)
 
         database_security_group = ec2.SecurityGroup(
-            self, "DatabaseSecurityGroup",
-            vpc=config['shared'].vpc,
+            self,
+            "DatabaseSecurityGroup",
+            vpc=config["shared"].vpc,
             description="Security group for RDS database",
-            allow_all_outbound=True
+            allow_all_outbound=True,
         )
         database_security_group.add_ingress_rule(
             peer=ec2.Peer.any_ipv4(),
             connection=ec2.Port.tcp(5432),
-            description="Allow PostgreSQL access from anywhere"
+            description="Allow PostgreSQL access from anywhere",
         )
 
         db_credentials = rds.Credentials.from_password(
             username="oysirs",
-            password=SecretValue.unsafe_plain_text("Oysirs12345!")  # In production, use Secrets Manager or SSM Parameter Store
+            password=SecretValue.unsafe_plain_text(
+                "Oysirs12345!"
+            ),  # In production, use Secrets Manager or SSM Parameter Store
         )
         # db_cluster = rds.DatabaseCluster(
         #     self, "OysirsDBCluster",
@@ -53,20 +56,23 @@ class Databases(Construct):
         #     default_database_name="oysirsdb",
         # )
         db_instance = rds.DatabaseInstance(
-            self, "OysirsDBInstance",
-            engine=rds.DatabaseInstanceEngine.postgres(version=rds.PostgresEngineVersion.VER_17_5),
+            self,
+            "OysirsDBInstance",
+            engine=rds.DatabaseInstanceEngine.postgres(
+                version=rds.PostgresEngineVersion.VER_17_5
+            ),
             instance_type=ec2.InstanceType.of(
                 ec2.InstanceClass.T3,
                 ec2.InstanceSize.MICRO,
             ),
-            vpc=config['shared'].vpc,
+            vpc=config["shared"].vpc,
             vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),
             security_groups=[database_security_group],
             credentials=db_credentials,
             multi_az=False,
             allocated_storage=20,
             # max_allocated_storage=100,
-            removal_policy=config['shared'].removal_policy,
+            removal_policy=config["shared"].removal_policy,
             deletion_protection=False,
             database_name="oysirsdb",
         )
@@ -80,44 +86,58 @@ class Databases(Construct):
             "DATABASE_DRIVER": "postgresql+psycopg2",
         }
         migration_security_group = ec2.SecurityGroup(
-            self, "MigrationLambdaSecurityGroup",
-            vpc=config['shared'].vpc,
+            self,
+            "MigrationLambdaSecurityGroup",
+            vpc=config["shared"].vpc,
             description="Security group for Migration Lambda",
-            allow_all_outbound=True
+            allow_all_outbound=True,
         )
         # Custom resource to initialize the database schema using an AWS Lambda function
+        # migration_asset = _lambda.Code.from_asset(
+        #     path=str((Path(__file__).parent / "functions/migrate").resolve())
+        # )
+        migration_asset = s3_assets.Asset(
+            self,
+            "MigrationAsset",
+            path=str((Path(__file__).parent / "functions/migrate").resolve()),
+        )
         migration_lambda = _lambda.Function(
-            self, "MigrationLambda",
+            self,
+            "MigrationLambda",
             runtime=_lambda.Runtime.PYTHON_3_12,
             handler="main.handler",
-            code=_lambda.Code.from_asset(
-                path=str((Path(__file__).parent / "functions/migrate").resolve())
+            code=_lambda.Code.from_bucket(
+                bucket=migration_asset.bucket,
+                key=migration_asset.s3_object_key,
+                object_version=migration_asset.asset_hash[:8],
             ),
             timeout=Duration.minutes(10),
             memory_size=512,
             environment={
-                **config['shared'].default_env_vars,
+                **config["shared"].default_env_vars,
                 **self.env_vars,
             },
             # vpc=config['shared'].vpc,
             # vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),
             # security_groups=[migration_security_group],
             layers=[
-                config['shared'].powertools_layer,
-                config['shared'].common_layer,
-                config['shared'].internal_layer,
+                config["shared"].powertools_layer,
+                config["shared"].common_layer,
+                config["shared"].internal_layer,
             ],
         )
-        db_instance.grant_connect(
-            migration_lambda.role, 
-            db_credentials.username
-        )
+        db_instance.grant_connect(migration_lambda.role, db_credentials.username)
 
         migration_provider = cr.Provider(
-            self, "MigrationProvider",
+            self,
+            "MigrationProvider",
             on_event_handler=migration_lambda,
         )
         CustomResource(
-            self, "MigrationCustomResource",
+            self,
+            "MigrationCustomResource",
             service_token=migration_provider.service_token,
+            properties={
+                "asset_hash": migration_asset.asset_hash,
+            },
         )
