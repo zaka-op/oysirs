@@ -109,7 +109,6 @@ class Databases(Construct):
             code=_lambda.Code.from_bucket(
                 bucket=migration_asset.bucket,
                 key=migration_asset.s3_object_key,
-                object_version=migration_asset.asset_hash[:8],
             ),
             timeout=Duration.minutes(10),
             memory_size=512,
