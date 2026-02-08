@@ -6,18 +6,26 @@ import Link from "next/link";
 import { useHulkFetch } from "hulk-react-utils";
 import { UploadListProps } from "@/lib/types/uploads";
 import { formatDate } from "@/lib/utils/intl";
+import { useRepo } from "@/lib/contexts/repo";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Home() {
-  const {
-    dispatch: dispatchUploads,
-    data: uploadsData,
-  } = useHulkFetch<UploadListProps>("/prod/uploads")
-  useEffect(() => {
-    dispatchUploads({
-      method: "GET",
-    });
-  }, []);
-  
+  // const {
+  //   dispatch: dispatchUploads,
+  //   data: uploadsData,
+  // } = useHulkFetch<UploadListProps>("/prod/uploads")
+  // useEffect(() => {
+  //   dispatchUploads({
+  //     method: "GET",
+  //   });
+  // }, []);
+
+  const repo = useRepo();
+  const { data: uploadsData, refetch: refetchUploads } = useQuery({
+    queryKey: ["uploads"],
+    queryFn: () => repo.getUploadList(),
+  });
+
   // const [stats, setStats] = useState({
   //   totalRecords: 127,
   //   processedRecords: 98,
@@ -44,11 +52,13 @@ export default function Home() {
     }
   };
 
+  console.log("uploadsData", uploadsData);
+
   const stats = {
-    totalRecords: uploadsData?.uploads.length || 0,
-    processedRecords: uploadsData?.uploads.filter(u => u.status === "completed").length || 0,
-    pendingRecords: uploadsData?.uploads.filter(u => u.status === "pending" || u.status === "in_progress").length || 0,
-    errorRecords: uploadsData?.uploads.filter(u => u.status === "failed").length || 0,
+    totalRecords: uploadsData?.uploads.length ?? 0,
+    processedRecords: uploadsData?.uploads.filter(u => u.status === "completed").length ?? 0,
+    pendingRecords: uploadsData?.uploads.filter(u => u.status === "pending" || u.status === "in_progress").length ?? 0,
+    errorRecords: uploadsData?.uploads.filter(u => u.status === "failed").length ?? 0,
   };
 
 
@@ -107,7 +117,7 @@ export default function Home() {
               {/* <Link href="/records" className="text-sm text-blue-600 hover:text-blue-800">View all</Link> */}
               {/* Reload button */}
               <button
-                onClick={() => dispatchUploads({ method: "GET" })}
+                onClick={() => refetchUploads()}
                 className="text-gray-400 hover:text-gray-600"
                 title="Reload"
               >

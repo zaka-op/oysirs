@@ -26,18 +26,22 @@ class UserInterface(Construct):
 
         # Create S3 bucket for hosting the user interface
         ui_bucket = s3.Bucket(
-            self, "UserInterfaceBucket",
+            self,
+            "UserInterfaceBucket",
             removal_policy=RemovalPolicy.DESTROY,
             auto_delete_objects=True,
         )
 
         # Create CloudFront distribution for the S3 bucket
         distribution = cloudfront.Distribution(
-            self, "UserInterfaceDistribution",
+            self,
+            "UserInterfaceDistribution",
             default_behavior=cloudfront.BehaviorOptions(
-                origin=cloudfront_origins.S3BucketOrigin.with_origin_access_control(ui_bucket),
+                origin=cloudfront_origins.S3BucketOrigin.with_origin_access_control(
+                    ui_bucket
+                ),
                 viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-                cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED
+                cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
             ),
             default_root_object="index.html",
             error_responses=[
@@ -45,35 +49,37 @@ class UserInterface(Construct):
                     http_status=403,
                     response_http_status=200,
                     response_page_path="/index.html",
-                    ttl=Duration.minutes(30)
+                    ttl=Duration.minutes(30),
                 ),
                 cloudfront.ErrorResponse(
                     http_status=404,
                     response_http_status=200,
                     response_page_path="/404.html",
-                    ttl=Duration.minutes(30)
-                )
+                    ttl=Duration.minutes(30),
+                ),
             ],
             comment="CloudFront distribution for Oysirs user interface",
         )
 
-        self.domain_name = f"https://do6b95i949ixa.cloudfront.net"
+        self.domain_name = "https://do6b95i949ixa.cloudfront.net"
 
         # Deploy static files to the S3 bucket
         project_path = str(Path(__file__).parent.joinpath("next-app").resolve())
         s3_deploy.BucketDeployment(
-            self, "DeployUserInterface",
+            self,
+            "DeployUserInterface",
             sources=[
                 s3_deploy.Source.asset(
                     path=project_path,
                     bundling=BundlingOptions(
                         image=_lambda.Runtime.NODEJS_LATEST.bundling_image,
                         command=[
-                            "bash", "-c",
-                            "npm install --legacy-peer-deps && npm run build && cp -r out/* /asset-output/"
+                            "bash",
+                            "-c",
+                            "npm install --legacy-peer-deps && npm run build && cp -r out/* /asset-output/",
                         ],
                         environment={
-                            "NEXT_PUBLIC_BASE_API_URL": "https://hdmf6m3sz5.execute-api.af-south-1.amazonaws.com",
+                            "NEXT_PUBLIC_BASE_API_URL": "https://hdmf6m3sz5.execute-api.af-south-1.amazonaws.com/prod",
                             "NEXT_PUBLIC_COGNITO_AUTHORITY": "https://cognito-idp.af-south-1.amazonaws.com/af-south-1_92Fh2H2dc",
                             "NEXT_PUBLIC_COGNITO_CLIENT_ID": "3fghes7a76ns86qss55fjbj8ca",
                             "NEXT_PUBLIC_COGNITO_REDIRECT_URI": self.domain_name,
@@ -83,7 +89,7 @@ class UserInterface(Construct):
                             "NEXT_PUBLIC_MAX_UPLOAD_SIZE_MB": "50",
                         },
                         # Pass an instance of your custom class here
-                        local=MyLocalBundler(project_path)
+                        local=MyLocalBundler(project_path),
                     ),
                     exclude=["**/node_modules/**", "**/.next/**", "**/out/**"],
                 ),
@@ -95,7 +101,8 @@ class UserInterface(Construct):
 
         # Output the CloudFront distribution domain name
         CfnOutput(
-            self, "UserInterfaceURL",
+            self,
+            "UserInterfaceURL",
             value=self.domain_name,
             description="URL of the Oysirs user interface",
         )

@@ -1,23 +1,25 @@
 "use client";
 
-import {ErrorOverlay, LoadingOverlay} from "@/components/Overlay";
+import { ErrorOverlay, LoadingOverlay } from "@/components/Overlay";
+import { RepoProvider } from "@/lib/contexts/repo";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { withHulk } from "hulk-react-utils";
 import { useAuth, withAuthenticationRequired } from "react-oidc-context";
 import { AuthProvider } from "react-oidc-context";
 
 
 const cognitoAuthConfig = {
-  authority: process.env.NEXT_PUBLIC_COGNITO_AUTHORITY,
-  client_id: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID,
-  redirect_uri: process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI,
-  response_type: process.env.NEXT_PUBLIC_COGNITO_RESPONSE_TYPE,
-  scope: process.env.NEXT_PUBLIC_COGNITO_SCOPE,
+    authority: process.env.NEXT_PUBLIC_COGNITO_AUTHORITY,
+    client_id: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID,
+    redirect_uri: process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI,
+    response_type: process.env.NEXT_PUBLIC_COGNITO_RESPONSE_TYPE,
+    scope: process.env.NEXT_PUBLIC_COGNITO_SCOPE,
 };
 
 function HulkProvider({ children }: { children: React.ReactNode }) {
     const auth = useAuth()
-    
-    return withHulk(({children}: { children: React.ReactNode }) => children, {
+
+    return withHulk(({ children }: { children: React.ReactNode }) => children, {
         alertGlobalOptions: {
             targetId: "alert-container",
             replaceDuplicates: true,
@@ -58,19 +60,22 @@ function HulkProvider({ children }: { children: React.ReactNode }) {
                 }
             }
         }
-    })({children});
+    })({ children });
 }
 
 const ProtectedContent = withAuthenticationRequired(({ children }: { children: React.ReactNode }) => children);
 
 export default function AppProvider({ children }: { children: React.ReactNode }) {
+    const queryClient = new QueryClient();
     return (
-        <AuthProvider {...cognitoAuthConfig}>
-            <HulkProvider>
-                <ProtectedContent>
-                    {children}
-                </ProtectedContent>
-            </HulkProvider>
-        </AuthProvider>
+        <QueryClientProvider client={queryClient}>
+            <AuthProvider {...cognitoAuthConfig}>
+                <RepoProvider>
+                    <ProtectedContent>
+                        {children}
+                    </ProtectedContent>
+                </RepoProvider>
+            </AuthProvider>
+        </QueryClientProvider>
     );
 }

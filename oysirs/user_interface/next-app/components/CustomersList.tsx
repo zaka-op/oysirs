@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CustomerProps, CustomerListProps } from "@/lib/types/customers";
 import { useHulkFetch } from "hulk-react-utils";
+import { useRepo } from "@/lib/contexts/repo";
+import { useQuery } from "@tanstack/react-query";
 
 // Mock data for demonstration
 // const mockCustomers: Customer[] = Array.from({ length: 50 }, (_, i) => ({
@@ -34,27 +36,35 @@ type SearchField = "email" | "mobile_no" | "name" | "tax_id" | "tin" | "rc";
 export default function CustomersList() {
   const [searchField, setSearchField] = useState<SearchField>("email");
   const [searchValue, setSearchValue] = useState("");
+  const [offset, setOffset] = useState(0);
+  const limit = 10;
+  // const {
+  //   dispatch: dispatchCustomerList,
+  //   data: customerListData,
+  // } = useHulkFetch<CustomerListProps>("prod/customers");
 
-  const {
-    dispatch: dispatchCustomerList,
-    data: customerListData,
-  } = useHulkFetch<CustomerListProps>("prod/customers");
+  const repo = useRepo();
+
+  const { data: customerListData, refetch: refetchCustomerList } = useQuery({
+    queryKey: ["customers", searchField, searchValue, offset, limit],
+    queryFn: () => repo.getCustomerList(searchField, searchValue, offset, limit),
+  })
+
+
 
   // const [currentPage, setCurrentPage] = useState(1);
   // const customersPerPage = 10;
 
   // Filter customers based on search
   // const filteredCustomers = mockCustomers.slice(0,20);
-  useEffect(() => {
-    dispatchCustomerList({
-      method: "GET",
-    })
-  }, []);
+  // useEffect(() => {
+  //   dispatchCustomerList({
+  //     method: "GET",
+  //   })
+  // }, []);
 
 
   // Pagination
-  const limit = customerListData?.limit || 10;
-  const offset = customerListData?.offset || 0;
   const totalCount = customerListData?.total || 0;
   const totalPages = Math.ceil(totalCount / limit);
   const currentPage = Math.floor(offset / limit) + 1;
@@ -62,34 +72,32 @@ export default function CustomersList() {
   const handlePageChange = (pageNumber: number) => {
     if (pageNumber < 1 || pageNumber > totalPages) return;
     const newOffset = (pageNumber - 1) * limit;
-    const query: any = {
-      offset: newOffset,
-    };
-    if (searchValue) {
-      query[searchField] = searchValue;
-    }
+    setOffset(newOffset);
 
-    dispatchCustomerList({
-      method: "GET",
-      query: query
-    })
+    // dispatchCustomerList({
+    //   method: "GET",
+    //   query: query
+    // })
+    refetchCustomerList()
   };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    dispatchCustomerList({
-      method: "GET",
-      query: {
-        [searchField]: searchValue
-      }
-    })
+    // dispatchCustomerList({
+    //   method: "GET",
+    //   query: {
+    //     [searchField]: searchValue
+    //   }
+    // })
+    refetchCustomerList()
   }
 
   const handleReset = () => {
     setSearchValue("");
-    dispatchCustomerList({
-      method: "GET",
-    })
+    // dispatchCustomerList({
+    //   method: "GET",
+    // })
+    refetchCustomerList()
   }
 
   if (!customerListData) {
@@ -272,8 +280,8 @@ export default function CustomersList() {
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
               className={`relative inline-flex items-center px-3 sm:px-4 py-2 text-sm font-medium rounded-md transition-colors ${currentPage === 1
-                  ? "text-gray-400 cursor-not-allowed"
-                  : "text-gray-700 hover:bg-gray-100"
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-gray-700 hover:bg-gray-100"
                 }`}
             >
               <span className="hidden sm:inline">Previous</span>
@@ -296,8 +304,8 @@ export default function CustomersList() {
                   key={pageNum}
                   onClick={() => handlePageChange(pageNum)}
                   className={`relative inline-flex items-center px-3 sm:px-4 py-2 text-sm font-medium rounded-md transition-colors ${currentPage === pageNum
-                      ? "bg-blue-600 text-white"
-                      : "text-gray-700 hover:bg-gray-100"
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-700 hover:bg-gray-100"
                     }`}
                 >
                   {pageNum}
@@ -308,8 +316,8 @@ export default function CustomersList() {
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
               className={`relative inline-flex items-center px-3 sm:px-4 py-2 text-sm font-medium rounded-md transition-colors ${currentPage === totalPages
-                  ? "text-gray-400 cursor-not-allowed"
-                  : "text-gray-700 hover:bg-gray-100"
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-gray-700 hover:bg-gray-100"
                 }`}
             >
               <span className="hidden sm:inline">Next</span>
