@@ -9,7 +9,7 @@ const RepoContext = createContext<OysirsRepository | undefined>(undefined);
 
 export const RepoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const auth = useAuth();
-    const repo = new OysirsRepositoryProd(() => auth.user?.access_token || "");
+    const repo = new OysirsRepositoryProd(() => auth.user?.id_token || "");
 
     return (
         <RepoContext.Provider value={repo}>
